@@ -66,3 +66,10 @@ using UniqueHandle = std::unique_ptr<std::remove_pointer_t<HANDLE>, HandleDelete
 ```
 - Entropy + lineage: compute segment entropy and terminate suspicious trees (e.g., explorer → cmd → powershell with high-entropy pages).
 - Offline-first: queue Gemini/AI requests and replay when connectivity returns; cache signatures, hashes, and prior analysis locally.
+
+## Native Windows guardian (C++)
+
+- A minimal Windows guardian loop now lives in `native/guardian_agent.cpp`. It samples live processes with RAII-wrapped handles, computes entropy, checks Authenticode signatures, walks loaded modules, and applies a risk heuristic (ready to swap for ONNX/WinML when available).
+- Build from a Visual Studio x64 Developer Prompt:  
+  `cl /std:c++20 /EHsc native\\guardian_agent.cpp /link /guard:cf /debug:full /out:guardian.exe /nologo wintrust.lib crypt32.lib psapi.lib`
+- Run once for a single snapshot (`guardian.exe --once`) or without flags to stream detections. Wire its alerts into this React UI via IPC when hosting in Electron/Tauri per the roadmap above.
