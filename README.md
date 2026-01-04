@@ -42,3 +42,27 @@ View your app in AI Studio: https://ai.studio/apps/drive/117ia8xhVCkmU99uO1d6RgK
 5. **File system + visuals**: Replace the mock file browser with `showOpenFileDialog` and add screenshot capture of windows/monitors for visual analysis input.
 6. **Offline/cache + settings**: Persist user prefs and analysis history locally (SQLite/IndexedDB) and support offline queuing of AI requests with retries when connectivity returns.
 7. **Updates + distribution**: Wire an auto-updater, sign the app, and ship MSIX installers; document privacy/telemetry, and add CI to run lint/build plus basic native smoke tests on Windows.
+
+## 2026 "Guardian" architecture & best practices (Windows)
+
+**Paradigm shift**
+- Move from post-mortem views to proactive detection: watch pre-spike signals (rapid thread churn + I/O bursts) and pre-emptively throttle/alert.
+- Default to edge AI for privacy: keep models local via ONNX Runtime/WinML with DirectML so air-gapped and “high-security” modes never ship telemetry to the cloud.
+- Prefer event-driven observability: favor ETW/eBPF for Windows over polling (PSAPI/PDH) to lower overhead and catch anomalies instantly.
+
+**Layered architecture**
+- **Data layer (“senses”)**: ETW/eBPF probes with legacy Toolhelp32 fallbacks; capture IRP latency, soft vs. hard faults, handle counts, and lineage for tree views.
+- **Intelligence layer (“brain”)**: Isolation Forest (ONNX) execution runs on the NPU via the DML execution provider. Feature vectors should cover entropy, signer reputation, parent-child lineage, module hashes, and Virtual Address Descriptor (VAD) clues for process hollowing.
+- **Interface layer (“nervous system”)**: WinUI 3/Tauri renderer with dirty-rect rendering and GPU budget <0.5%; keep the React/Vite bundle for the webview and pipe IPC events from the host.
+
+**Actionable implementation hints**
+- eBPF for Windows (still maturing): attach to Windows Filtering Platform (WFP) hooks (e.g., outbound connection classification) to flag Command and Control (C2) ranges before sockets are fully established, and fall back to ETW/WFP callouts where eBPF coverage is limited.
+- Golden Image baselines: store per-profile embeddings (e.g., Video Editor vs. Banker) and use deviation scores instead of static CPU thresholds.
+- RAII for stability: wrap Win32 handles in `UniqueHandle` with a `HandleDeleter` to prevent leaks when sampling processes or modules.
+
+```cpp
+struct HandleDeleter { void operator()(HANDLE h) { if (h && h != INVALID_HANDLE_VALUE) CloseHandle(h); } };
+using UniqueHandle = std::unique_ptr<std::remove_pointer_t<HANDLE>, HandleDeleter>;
+```
+- Entropy + lineage: compute segment entropy and terminate suspicious trees (e.g., explorer → cmd → powershell with high-entropy pages).
+- Offline-first: queue Gemini/AI requests and replay when connectivity returns; cache signatures, hashes, and prior analysis locally.
