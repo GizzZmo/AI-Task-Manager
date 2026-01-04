@@ -1,0 +1,5 @@
+{
+  "name": "Sentinel AI Task Manager",
+  "description": "A next-generation AI-supervised process management dashboard. It simulates high-frequency system telemetry and uses Gemini 2.5 Flash as an embedded supervisor to analyze process feature vectors for anomalies.",
+  "requestFramePermissions": []
+}
