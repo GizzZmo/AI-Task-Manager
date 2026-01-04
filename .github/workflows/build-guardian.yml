@@ -44,14 +44,19 @@ jobs:
         shell: cmd
         run: |
           call "%VCVARS_PATH%" && cl /std:c++20 /EHsc native\guardian_agent.cpp ^
-            /link /guard:cf /debug:full /out:guardian.exe /nologo ^
-            wintrust.lib crypt32.lib psapi.lib
+              /link /guard:cf /debug:full /out:guardian.exe /nologo ^
+              wintrust.lib crypt32.lib psapi.lib
 
       - name: Upload guardian artifact
         uses: actions/upload-artifact@v4
         with:
           name: guardian-windows
-          path: |
-            guardian.exe
-            guardian.pdb
+          path: guardian.exe
+
+      - name: Upload guardian symbols (if present)
+        if: ${{ hashFiles('guardian.pdb') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: guardian-windows-pdb
+          path: guardian.pdb
           if-no-files-found: warn
