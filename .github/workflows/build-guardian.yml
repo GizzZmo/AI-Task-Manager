@@ -48,21 +48,18 @@ jobs:
       - name: Build guardian executable
         id: build-guardian
         shell: cmd
+        env:
+          GUARDIAN_CL_FLAGS: "/std:c++20 /EHsc /MD native\guardian_agent.cpp"
+          GUARDIAN_LINK_FLAGS: "/guard:cf /debug:full /out:guardian.exe /nologo"
+          GUARDIAN_LIBS: "wintrust.lib crypt32.lib psapi.lib"
         run: |
           call "%VCVARS_PATH%"
           cl ^
-            /std:c++20 ^
-            /EHsc ^
-            /MD ^
-            native\guardian_agent.cpp ^
+            %GUARDIAN_CL_FLAGS% ^
             /link ^
-            /guard:cf ^
-            /debug:full ^
-            /out:guardian.exe ^
-            /nologo ^
-            wintrust.lib ^
-            crypt32.lib ^
-            psapi.lib
+            %GUARDIAN_LINK_FLAGS% ^
+            %GUARDIAN_LIBS%
+          REM Allow PDB to flush to disk before existence check
           timeout /t 1 /nobreak >nul
           if exist guardian.pdb (
             echo pdb_exists=true >> "%GITHUB_OUTPUT%"
