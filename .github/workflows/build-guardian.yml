@@ -63,6 +63,7 @@ jobs:
             wintrust.lib ^
             crypt32.lib ^
             psapi.lib
+          timeout /t 1 /nobreak >nul
           if exist guardian.pdb (
             echo pdb_exists=true >> "%GITHUB_OUTPUT%"
           ) else (
@@ -82,5 +83,4 @@ jobs:
         with:
           name: guardian-windows-pdb
           path: guardian.pdb
-          if-no-files-found: warn
           retention-days: 7
