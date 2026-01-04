@@ -1,0 +1,86 @@
+name: Build assets and Windows guardian
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build web assets
+        run: npm run build
+
+      - name: Upload web assets
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-dist
+          path: dist/
+          retention-days: 7
+
+      - name: Locate MSVC toolchain
+        shell: pwsh
+        run: |
+          $vswhereExe = Join-Path "${env:ProgramFiles(x86)}" "Microsoft Visual Studio\Installer\vswhere.exe"
+          if (-not (Test-Path $vswhereExe)) {
+            $vswhereExe = Join-Path "${env:ProgramFiles}" "Microsoft Visual Studio\Installer\vswhere.exe"
+          }
+          $vsPath = & $vswhereExe -latest -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          if (-not $vsPath) { throw "Visual Studio with C++ components not found." }
+          $vcvars = Join-Path $vsPath "VC\Auxiliary\Build\vcvars64.bat"
+          "VCVARS_PATH=$vcvars" >> $env:GITHUB_ENV
+
+      - name: Build guardian executable
+        id: build-guardian
+        shell: cmd
+        env:
+          GUARDIAN_CL_FLAGS: "/std:c++20 /EHsc /MD native\guardian_agent.cpp"
+          GUARDIAN_LINK_FLAGS: "/guard:cf /debug:full /out:guardian.exe /nologo"
+          GUARDIAN_LIBS: "wintrust.lib crypt32.lib psapi.lib"
+        run: |
+          call "%VCVARS_PATH%"
+          cl ^
+            %GUARDIAN_CL_FLAGS% ^
+            /link ^
+            %GUARDIAN_LINK_FLAGS% ^
+            %GUARDIAN_LIBS%
+          REM Allow PDB to flush to disk before existence check
+          timeout /t 1 /nobreak >nul
+          if exist guardian.pdb (
+            echo pdb_exists=true >> "%GITHUB_OUTPUT%"
+          ) else (
+            echo pdb_exists=false >> "%GITHUB_OUTPUT%"
+          )
+
+      - name: Upload guardian artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: guardian-windows
+          path: guardian.exe
+          retention-days: 7
+
+      - name: Upload guardian symbols (if present)
+        if: ${{ steps.build-guardian.outputs.pdb_exists == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: guardian-windows-pdb
+          path: guardian.pdb
+          retention-days: 7
