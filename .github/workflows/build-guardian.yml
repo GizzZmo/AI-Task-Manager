@@ -63,7 +63,7 @@ jobs:
             wintrust.lib ^
             crypt32.lib ^
             psapi.lib
-          if exist guardian.pdb (echo pdb_exists=true>> "%GITHUB_OUTPUT%") else (echo pdb_exists=false>> "%GITHUB_OUTPUT%")
+          if exist guardian.pdb (echo pdb_exists=true >> "%GITHUB_OUTPUT%") else (echo pdb_exists=false >> "%GITHUB_OUTPUT%")
 
       - name: Upload guardian artifact
         uses: actions/upload-artifact@v4
