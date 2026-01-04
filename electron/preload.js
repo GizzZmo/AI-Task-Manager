@@ -5,7 +5,8 @@ const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('electron', {
   // Future IPC methods will be added here as we implement native features
   // For now, this is a placeholder for the secure bridge
-  
+
+  getGuardianSnapshot: () => ipcRenderer.invoke('guardian:sample'),
   // Example for future use:
   // getProcessList: () => ipcRenderer.invoke('get-process-list'),
   // terminateProcess: (pid) => ipcRenderer.invoke('terminate-process', pid),

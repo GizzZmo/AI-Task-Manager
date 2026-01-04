@@ -9,7 +9,9 @@
     "build": "vite build",
     "preview": "vite preview",
     "electron:dev": "cross-env NODE_ENV=development electron .",
-    "electron:build": "npm run build && electron-builder"
+    "electron:build": "npm run native:build && npm run build && electron-builder",
+    "native:build": "node-gyp rebuild",
+    "native:clean": "node-gyp clean"
   },
   "build": {
     "appId": "com.sentinel.ai-task-manager",
@@ -20,7 +22,11 @@
     "files": [
       "dist/**/*",
       "electron/**/*",
-      "package.json"
+      "package.json",
+      "build/Release/guardian.node"
+    ],
+    "asarUnpack": [
+      "build/Release/guardian.node"
     ],
     "win": {
       "target": "nsis",
@@ -44,6 +50,7 @@
     "cross-env": "^10.1.0",
     "electron": "^39.2.7",
     "electron-builder": "^26.0.12",
+    "node-gyp": "^10.3.1",
     "typescript": "~5.8.2",
     "vite": "^6.2.0"
   }
