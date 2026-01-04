@@ -30,7 +30,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: web-dist
-          path: dist/**
+          path: dist/
           retention-days: 7
 
       - name: Locate MSVC toolchain
@@ -52,6 +52,7 @@ jobs:
           cl ^
             /std:c++20 ^
             /EHsc ^
+            /MD ^
             native\guardian_agent.cpp ^
             /link ^
             /guard:cf ^
@@ -70,7 +71,7 @@ jobs:
           retention-days: 7
 
       - name: Upload guardian symbols (if present)
-        if: hashFiles('./guardian.pdb') != ''
+        if: hashFiles('guardian.pdb') != ''
         uses: actions/upload-artifact@v4
         with:
           name: guardian-windows-pdb
