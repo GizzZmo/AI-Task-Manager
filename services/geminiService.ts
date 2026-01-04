@@ -24,7 +24,7 @@ export const analyzeProcessWithGemini = async (processData: ProcessData): Promis
     `;
 
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
+      model: "gemini-3-flash",
       contents: prompt,
       config: {
         responseMimeType: "application/json",
@@ -85,7 +85,7 @@ export const researchProcess = async (processName: string): Promise<ResearchResp
     Provide a concise summary suitable for a security dashboard.`;
 
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
+      model: "gemini-3-flash",
       contents: prompt,
       config: {
         tools: [{ googleSearch: {} }],
@@ -124,7 +124,7 @@ export const researchProcess = async (processName: string): Promise<ResearchResp
 export const analyzeSystemScreenshot = async (base64Data: string, mimeType: string): Promise<string> => {
   try {
     const response = await ai.models.generateContent({
-      model: 'gemini-3-pro-preview',
+      model: 'gemini-3-pro',
       contents: {
         parts: [
           {
