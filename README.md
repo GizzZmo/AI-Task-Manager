@@ -15,9 +15,33 @@ View your app in AI Studio: https://ai.studio/apps/drive/117ia8xhVCkmU99uO1d6RgK
 
 1. Install dependencies:
    `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
+2. Create a `.env.local` file by copying the example:
+   `cp .env.local.example .env.local`
+3. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key (get one from https://aistudio.google.com/app/apikey)
+4. Run the app:
    `npm run dev`
+
+## Run as Desktop Application (Electron - In Progress)
+
+The project now includes initial Electron scaffolding for Windows desktop packaging:
+
+1. **Development mode**: Run the Vite dev server, then in a separate terminal:
+   ```bash
+   npm run electron:dev
+   ```
+   This launches the Electron window pointing to `http://localhost:3000`.
+
+2. **Build desktop app**: 
+   ```bash
+   npm run electron:build
+   ```
+   Produces a distributable Windows installer in `release/`.
+
+**Status**: Basic Electron wrapper is functional. Next steps per roadmap:
+- Replace mock process telemetry with live Windows APIs (PDH/WMI/ETW)
+- Implement secure IPC for process control (terminate, suspend, spawn)
+- Add native file dialogs and screenshot capture
+- Integrate C++ guardian agent via child process or native module
 
 ## Codebase overview
 
@@ -35,7 +59,7 @@ View your app in AI Studio: https://ai.studio/apps/drive/117ia8xhVCkmU99uO1d6RgK
 
 ## Roadmap: Windows desktop application
 
-1. **Choose shell + package**: Reuse this React UI in an Electron or Tauri host (Tauri for smaller runtime) with a secure preload/IPC layer; keep the existing Vite build for the renderer bundle.
+1. ✅ **Choose shell + package**: Basic Electron integration implemented with secure preload/IPC layer. The React UI now runs in an Electron host while keeping the existing Vite build for the renderer bundle. Next: Consider Tauri for smaller runtime footprint.
 2. **Replace mock telemetry**: Swap `INITIAL_PROCESSES` with live Windows data via PDH/WMI/ETW snapshots (CPU, memory, IO, handles, modules). Add a native module/service to stream updates into the renderer through IPC.
 3. **Process control**: Implement trusted host calls for termination, suspend/resume, and spawning with argument validation and privilege checks; surface Win32 error codes in `systemLogs`.
 4. **Security enrichment**: Add Authenticode signature checks, reputation lookups, module hashing, and event hooks for driver/service creation. Harden the AI prompt with richer feature vectors and configurable model endpoints.
