@@ -85,6 +85,7 @@ We're following the roadmap in README.md. Current priorities:
    - Ensure the app builds successfully
    - Test web and desktop versions
    - Verify no TypeScript errors
+   - Mirror CI locally where possible: `npm run native:build && npm run build` (same checks as `.github/workflows/ci.yml`)
 
 4. **Update documentation** if needed:
    - Update README.md for user-facing changes

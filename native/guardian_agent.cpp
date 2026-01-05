@@ -1,4 +1,6 @@
 #ifdef _WIN32
+// Prevent Windows headers from defining min/max macros that clash with std::min/max
+#define NOMINMAX
 #include <Windows.h>
 #include <TlHelp32.h>
 #include <Psapi.h>
@@ -374,7 +376,11 @@ public:
                                : (score >= kSuspiciousCutoff) ? RiskLevel::Suspicious
                                : RiskLevel::Normal;
 
-        return { level, std::min(score, 1.0f), ComposeReasons(reasons) };
+        RiskReport report{};
+        report.level = level;
+        report.score = std::min(score, 1.0f);
+        report.reason = ComposeReasons(reasons);
+        return report;
     }
 
 private:

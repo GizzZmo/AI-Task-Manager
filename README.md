@@ -4,21 +4,30 @@
 
 # Run and deploy your AI Studio app
 
-This contains everything you need to run your app locally.
+Sentinel AI Task Manager is an AI-assisted process and resource monitor built with React, Vite, and Electron. It pairs live (or simulated) process telemetry with Gemini-powered analysis to surface risky behavior and remediation guidance.
+
+**Feature highlights**
+- Realtime process table, tree, and charts with selectable drill-downs
+- Gemini-backed analysis, research, and visual inspection flows
+- Mock process/file launcher for exercising the UI without live system hooks
+- Native “guardian” module (stub on non-Windows) ready for deeper Windows telemetry
 
 View your app in AI Studio: https://ai.studio/apps/drive/117ia8xhVCkmU99uO1d6RgKqWrlXUjDSY
 
 ## Run Locally
 
-**Prerequisites:**  Node.js
-
+**Prerequisites**
+- Node.js 20+ (includes npm)
+- Build tools for native modules (Python + C++ toolchain; on Windows use “x64 Native Tools” Developer Command Prompt)
 
 1. Install dependencies:
    `npm install`
 2. Create a `.env.local` file by copying the example:
    `cp .env.local.example .env.local`
 3. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key (get one from https://aistudio.google.com/app/apikey)
-4. Run the app:
+4. Build the lightweight native stub (ensures node-gyp works before Electron packaging):
+   `npm run native:build`
+5. Run the app:
    `npm run dev`
 
 ## Run as Desktop Application (Electron - In Progress)
@@ -43,6 +52,30 @@ The project now includes initial Electron scaffolding for Windows desktop packag
 - Implement secure IPC for process control (terminate, suspend, spawn)
 - Add native file dialogs and screenshot capture
 - Integrate C++ guardian agent via child process or native module
+
+## Environment variables
+
+- `GEMINI_API_KEY` (required for Gemini-powered analysis)
+- `API_KEY` (fallback name read by `services/geminiService.ts`)
+- `.env.local` is gitignored; copy from `.env.local.example` and set the key you use
+
+## Available npm scripts
+
+- `npm run dev` — start the Vite dev server
+- `npm run build` — production web build (Vite)
+- `npm run native:build` — compile the guardian native module/stub via node-gyp
+- `npm run native:clean` — remove native build artifacts
+- `npm run electron:dev` — launch Electron in development against the dev server
+- `npm run electron:build` — package the desktop app (runs `native:build` + `build`)
+
+## CI/CD automation
+
+GitHub Actions keep builds reproducible:
+
+- `.github/workflows/ci.yml` (advanced build matrix) installs dependencies with cache, compiles the native guardian module, runs `npm run build`, and publishes build artifacts for Ubuntu and Windows runners.
+- `.github/workflows/build-guardian.yml` (Windows guardian) produces the standalone `guardian.exe` and optional PDB symbols for deeper Windows security testing.
+
+Artifacts from CI runs include `dist/` for the web bundle and `build/Release` for the guardian module, making it easy to pick up a clean build without running the toolchain locally.
 
 ## Codebase overview
 
