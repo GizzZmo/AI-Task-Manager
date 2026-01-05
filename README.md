@@ -14,6 +14,24 @@ Sentinel AI Task Manager is an AI-assisted process and resource monitor built wi
 
 View your app in AI Studio: https://ai.studio/apps/drive/117ia8xhVCkmU99uO1d6RgKqWrlXUjDSY
 
+## Quickstart (5 minutes)
+
+1. `npm install`
+2. `cp .env.local.example .env.local` and set `GEMINI_API_KEY` (or `API_KEY`)
+3. `npm run dev` then open http://localhost:3000
+4. Optional: in another terminal run `npm run electron:dev` to open the desktop shell
+5. Need a packaged build? Run `npm run electron:build` (includes `native:build` + `build`)
+
+See [docs/QUICKSTART.md](docs/QUICKSTART.md) for a fuller, step-by-step guide.
+
+## Documentation & wiki
+
+- Quickstart: [docs/QUICKSTART.md](docs/QUICKSTART.md)
+- How-to recipes: [docs/HOWTO.md](docs/HOWTO.md)
+- Electron packaging: [ELECTRON.md](ELECTRON.md)
+- Contributing and workflows: [CONTRIBUTING.md](CONTRIBUTING.md)
+- Wiki seed: [docs/WIKI.md](docs/WIKI.md) — copy these docs into a GitHub wiki or use them as a knowledge base
+
 ## Run Locally
 
 **Prerequisites**
@@ -67,6 +85,14 @@ The project now includes initial Electron scaffolding for Windows desktop packag
 - `npm run native:clean` — remove native build artifacts
 - `npm run electron:dev` — launch Electron in development against the dev server
 - `npm run electron:build` — package the desktop app (runs `native:build` + `build`)
+
+## How-to recipes (quick reference)
+
+- **Run Gemini analysis**: Select a process row → open **AI Supervisor** → pick **Analyze**, **Research**, or **Visual inspection**. Configure `GEMINI_API_KEY` first.
+- **Simulate a new process**: Click **Run task**, enter a name/command/risk, and launch. The entry flows into the table, tree, charts, and AI prompts.
+- **Refresh the guardian stub or package desktop**: `npm run native:build` to rebuild the native module; `npm run electron:build` to produce an installer in `release/`.
+
+See [docs/HOWTO.md](docs/HOWTO.md) for step-by-step guides and more recipes.
 
 ## CI/CD automation
 
