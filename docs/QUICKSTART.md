@@ -21,7 +21,7 @@ Get Sentinel AI Task Manager running in minutes for web and desktop development.
    ```bash
    npm run dev
    ```
-4. Open http://localhost:3000 — you should see live mock processes, CPU/memory charts, and the AI supervisor panel. A `MISSING_API_KEY` badge appears if your key is not set.
+4. Open http://localhost:3000 — you should see live mock processes, CPU/memory charts, and the AI supervisor panel. Toggle the AI Supervisor tabs (Analyze, Research, Modules, Visual) to exercise Gemini calls; Visual accepts screenshots once your API key is set.
 
 ## Desktop (Electron) flow
 1. Start the Vite dev server (`npm run dev`) in one terminal.
@@ -29,7 +29,7 @@ Get Sentinel AI Task Manager running in minutes for web and desktop development.
    ```bash
    npm run electron:dev
    ```
-   The Electron window points to the dev server. The optional native guardian module is built automatically when you run `npm install`; rebuild manually with `npm run native:build` if needed.
+   The Electron window points to the dev server. The optional native guardian module is built automatically when you run `npm install` (a stub builds on non-Windows); rebuild manually with `npm run native:build` if needed.
 3. Package the desktop app (Windows):
    ```bash
    npm run electron:build
@@ -39,6 +39,7 @@ Get Sentinel AI Task Manager running in minutes for web and desktop development.
 ## Production builds
 - Web bundle: `npm run build` (outputs to `dist/`)
 - Preview the production bundle locally: `npm run preview`
+- Desktop installer: `npm run electron:build` (outputs to `release/` and bundles the guardian module)
 
 ## Troubleshooting
 - **node-gyp errors**: Ensure Python 3 and a C++ build toolchain are available. On Linux, install `build-essential`. On Windows, use the “x64 Native Tools” shell.

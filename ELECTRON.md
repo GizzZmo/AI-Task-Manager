@@ -43,6 +43,12 @@ This will:
 1. Build the React app with Vite (output: `dist/`)
 2. Package everything with electron-builder (output: `release/`)
 
+## Guardian IPC bridge
+
+- `electron/main.js` attempts to load `build/Release/guardian.node` (or the packaged equivalent) and registers an IPC handler `guardian:sample` that calls `guardianNative.sampleOnce()`.
+- `electron/preload.js` exposes `window.electron.getGuardianSnapshot()` via `ipcRenderer.invoke('guardian:sample')`, keeping Node internals isolated from the renderer.
+- On non-Windows platforms the guardian build is a stub; load failures are logged but the Electron shell still runs with mock data.
+
 ## Next Steps (Roadmap Implementation)
 
 ### 1. Native Windows Process APIs
