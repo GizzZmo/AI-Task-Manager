@@ -12,6 +12,13 @@ Task-focused steps for day-to-day use and demos.
 2. Click any process row to select it.
 3. Open the **AI Supervisor** panel and choose **Analyze** (risk analysis), **Research** (open web), or **Visual inspection** (image review). Results stream into the panel and logs.
 
+## Upload evidence for visual analysis
+1. Select a process and open **AI Supervisor**.
+2. Switch to the **Visual** tab.
+3. Click the dropzone to upload a screenshot or log capture (PNG/JPEG). A preview appears inline.
+4. Run **Optical Analysis** to send the image to Gemini Pro (`gemini-3-pro`) and receive a summary in the panel.
+5. Use **CLEAR** to replace the evidence and re-run.
+
 ## Simulate a new process or file event
 1. Click **Run task** in the UI to open the mock launcher.
 2. Provide a name, command line, and risk level; click **Launch**.
@@ -36,6 +43,12 @@ Task-focused steps for day-to-day use and demos.
    npm run electron:build
    ```
 3. Grab the installer from `release/`. This command also runs the web production build.
+
+## Inspect modules and symbols
+1. Select a process and open **AI Supervisor**.
+2. Switch to the **Modules** tab to see loaded modules for the process.
+3. Use the filter box to search by module name or path.
+4. Click **Load Symbols** to simulate configuring the Microsoft Symbol Server; the panel shows when symbols are loaded.
 
 ## Reset to a clean state
 - Stop dev servers, run `npm run native:clean`, and delete any temporary `.env.local` files you no longer need.

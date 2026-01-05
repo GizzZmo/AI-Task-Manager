@@ -76,11 +76,13 @@ The project now includes initial Electron scaffolding for Windows desktop packag
 - `GEMINI_API_KEY` (required for Gemini-powered analysis)
 - `API_KEY` (fallback name read by `services/geminiService.ts`)
 - `.env.local` is gitignored; copy from `.env.local.example` and set the key you use
+- Set `GEMINI_API_KEY` (or `API_KEY`) in `.env.local`; Vite's `define` in `vite.config.ts` maps `GEMINI_API_KEY` into both `process.env.API_KEY` and `process.env.GEMINI_API_KEY` in the client bundle at build time.
 
 ## Available npm scripts
 
 - `npm run dev` — start the Vite dev server
 - `npm run build` — production web build (Vite)
+- `npm run preview` — serve the production build locally for smoke tests
 - `npm run native:build` — compile the guardian native module/stub via node-gyp
 - `npm run native:clean` — remove native build artifacts
 - `npm run electron:dev` — launch Electron in development against the dev server
@@ -91,6 +93,7 @@ The project now includes initial Electron scaffolding for Windows desktop packag
 - **Run Gemini analysis**: Select a process row → open **AI Supervisor** → pick **Analyze**, **Research**, or **Visual inspection**. Configure `GEMINI_API_KEY` first.
 - **Simulate a new process**: Click **Run task**, enter a name/command/risk, and launch. The entry flows into the table, tree, charts, and AI prompts.
 - **Refresh the guardian stub or package desktop**: `npm run native:build` to rebuild the native module; `npm run electron:build` to produce an installer in `release/`.
+- **Upload evidence for visual inspection**: In **AI Supervisor**, switch to **Visual**, upload a screenshot/log capture, and run optical analysis for a Gemini Pro (`gemini-3-pro`) summary.
 
 See [docs/HOWTO.md](docs/HOWTO.md) for step-by-step guides and more recipes.
 
@@ -109,13 +112,13 @@ Artifacts from CI runs include `dist/` for the web bundle and `build/Release` fo
 - **Entry**: `index.tsx` renders `App.tsx`.
 - **State + simulation** (`App.tsx`): seeds processes and logs from `constants.ts`, updates CPU/memory history every 2 seconds, and exposes handlers for selecting, terminating, and spawning mock processes (used by `RunTaskModal` and `FileBrowserModal`).
 - **Components**:
-  - `ProcessTable.tsx`: tabular view with terminate/select actions.
-  - `ResourceChart.tsx`: live CPU/memory charts fed by `cpuHistory`/`memHistory`.
-  - `ProcessTree.tsx`: parent/child visualization of running processes.
-  - `AISupervisor.tsx`: Gemini-backed analysis, research, and visual inspection of selected processes.
-  - `RunTaskModal.tsx` / `FileBrowserModal.tsx`: mock launcher and file picker feeding `handleSpawnProcess`.
-- **Services**: `services/geminiService.ts` wraps Gemini calls for process analysis, open-web research, and screenshot review. It reads `process.env.API_KEY`; show a `MISSING_API_KEY` badge if unset.
-- **Types**: `types.ts` centralizes `ProcessData`, `RiskLevel`, module metadata, and chart point shapes.
+   - `ProcessTable.tsx`: tabular view with terminate/select actions.
+   - `ResourceChart.tsx`: live CPU/memory charts fed by `cpuHistory`/`memHistory`.
+   - `ProcessTree.tsx`: parent/child visualization of running processes.
+   - `AISupervisor.tsx`: Gemini-backed analysis, research, module inspection with optional symbol load, and visual inspection (screenshot upload) of selected processes.
+   - `RunTaskModal.tsx` / `FileBrowserModal.tsx`: mock launcher and file picker feeding `handleSpawnProcess`.
+ - **Services**: `services/geminiService.ts` wraps Gemini calls for process analysis, open-web research, and screenshot review. It reads `process.env.API_KEY`; show a `MISSING_API_KEY` badge if unset.
+ - **Types**: `types.ts` centralizes `ProcessData`, `RiskLevel`, module metadata, and chart point shapes.
 
 ## Roadmap: Windows desktop application
 

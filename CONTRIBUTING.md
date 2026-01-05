@@ -52,6 +52,11 @@ npm run build
 npm run electron:build
 ```
 
+- Preview the production bundle locally for a quick smoke test:
+  ```bash
+  npm run preview
+  ```
+
 ## Code Style
 
 - Use TypeScript for all new code
@@ -90,6 +95,7 @@ We're following the roadmap in README.md. Current priorities:
 4. **Update documentation** if needed:
    - Update README.md for user-facing changes
    - Update ELECTRON.md for integration details
+   - Keep `docs/QUICKSTART.md` and `docs/HOWTO.md` aligned with UI or workflow changes
    - Add comments for complex code
 
 5. **Submit a pull request**:
