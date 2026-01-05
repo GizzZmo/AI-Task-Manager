@@ -76,7 +76,7 @@ The project now includes initial Electron scaffolding for Windows desktop packag
 - `GEMINI_API_KEY` (required for Gemini-powered analysis)
 - `API_KEY` (fallback name read by `services/geminiService.ts`)
 - `.env.local` is gitignored; copy from `.env.local.example` and set the key you use
-- Vite injects `GEMINI_API_KEY` into `process.env.API_KEY` for the client bundle; set either name in `.env.local`.
+- Vite (via `vite.config.ts` `define`) maps `GEMINI_API_KEY` to `process.env.API_KEY` at build time for the client bundle; set either name in `.env.local`.
 
 ## Available npm scripts
 
@@ -93,7 +93,7 @@ The project now includes initial Electron scaffolding for Windows desktop packag
 - **Run Gemini analysis**: Select a process row → open **AI Supervisor** → pick **Analyze**, **Research**, or **Visual inspection**. Configure `GEMINI_API_KEY` first.
 - **Simulate a new process**: Click **Run task**, enter a name/command/risk, and launch. The entry flows into the table, tree, charts, and AI prompts.
 - **Refresh the guardian stub or package desktop**: `npm run native:build` to rebuild the native module; `npm run electron:build` to produce an installer in `release/`.
-- **Upload evidence for visual inspection**: In **AI Supervisor**, switch to **Visual**, upload a screenshot/log capture, and run optical analysis for a Gemini Pro summary.
+- **Upload evidence for visual inspection**: In **AI Supervisor**, switch to **Visual**, upload a screenshot/log capture, and run optical analysis for a Gemini Pro (`gemini-3-pro`) summary.
 
 See [docs/HOWTO.md](docs/HOWTO.md) for step-by-step guides and more recipes.
 
