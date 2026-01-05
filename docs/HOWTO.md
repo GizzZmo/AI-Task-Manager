@@ -16,7 +16,7 @@ Task-focused steps for day-to-day use and demos.
 1. Select a process and open **AI Supervisor**.
 2. Switch to the **Visual** tab.
 3. Click the dropzone to upload a screenshot or log capture (PNG/JPEG). A preview appears inline.
-4. Run **Optical Analysis** to send the image to Gemini 3 Pro and receive a summary in the panel.
+4. Run **Optical Analysis** to send the image to Gemini Pro and receive a summary in the panel.
 5. Use **CLEAR** to replace the evidence and re-run.
 
 ## Simulate a new process or file event

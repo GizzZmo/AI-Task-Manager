@@ -93,7 +93,7 @@ The project now includes initial Electron scaffolding for Windows desktop packag
 - **Run Gemini analysis**: Select a process row → open **AI Supervisor** → pick **Analyze**, **Research**, or **Visual inspection**. Configure `GEMINI_API_KEY` first.
 - **Simulate a new process**: Click **Run task**, enter a name/command/risk, and launch. The entry flows into the table, tree, charts, and AI prompts.
 - **Refresh the guardian stub or package desktop**: `npm run native:build` to rebuild the native module; `npm run electron:build` to produce an installer in `release/`.
-- **Upload evidence for visual inspection**: In **AI Supervisor**, switch to **Visual**, upload a screenshot/log capture, and run optical analysis for a Gemini 3 Pro summary.
+- **Upload evidence for visual inspection**: In **AI Supervisor**, switch to **Visual**, upload a screenshot/log capture, and run optical analysis for a Gemini Pro summary.
 
 See [docs/HOWTO.md](docs/HOWTO.md) for step-by-step guides and more recipes.
 
