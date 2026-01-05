@@ -76,7 +76,7 @@ The project now includes initial Electron scaffolding for Windows desktop packag
 - `GEMINI_API_KEY` (required for Gemini-powered analysis)
 - `API_KEY` (fallback name read by `services/geminiService.ts`)
 - `.env.local` is gitignored; copy from `.env.local.example` and set the key you use
-- Vite (via `vite.config.ts` `define`) maps `GEMINI_API_KEY` to `process.env.API_KEY` at build time for the client bundle; set either name in `.env.local`.
+- Set `GEMINI_API_KEY` (or `API_KEY`) in `.env.local`; Vite's `define` in `vite.config.ts` maps `GEMINI_API_KEY` into both `process.env.API_KEY` and `process.env.GEMINI_API_KEY` in the client bundle at build time.
 
 ## Available npm scripts
 
