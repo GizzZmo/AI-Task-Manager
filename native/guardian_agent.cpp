@@ -374,7 +374,11 @@ public:
                                : (score >= kSuspiciousCutoff) ? RiskLevel::Suspicious
                                : RiskLevel::Normal;
 
-        return { level, std::min(score, 1.0f), ComposeReasons(reasons) };
+        RiskReport report{};
+        report.level = level;
+        report.score = std::min(score, 1.0f);
+        report.reason = ComposeReasons(reasons);
+        return report;
     }
 
 private:
