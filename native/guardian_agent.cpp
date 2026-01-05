@@ -1,4 +1,5 @@
 #ifdef _WIN32
+// Prevent Windows headers from defining min/max macros that clash with std::min/max
 #define NOMINMAX
 #include <Windows.h>
 #include <TlHelp32.h>
