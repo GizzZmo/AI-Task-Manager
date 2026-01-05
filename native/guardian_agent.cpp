@@ -27,6 +27,10 @@
 #include <atomic>
 #include <cstdlib>
 
+#if defined(BUILDING_NODE_EXTENSION)
+#include <node_api.h>
+#endif
+
 static std::atomic<bool> g_stop{ false };
 
 BOOL WINAPI ConsoleCtrlHandler(DWORD ctrlType)
@@ -467,6 +471,112 @@ private:
     std::chrono::milliseconds _pollInterval;
 };
 
+#if defined(BUILDING_NODE_EXTENSION)
+namespace
+{
+    std::string WideToUtf8(const std::wstring& wide)
+    {
+        if (wide.empty()) return {};
+        const int sizeNeeded = WideCharToMultiByte(CP_UTF8, 0, wide.c_str(),
+            static_cast<int>(wide.size()), nullptr, 0, nullptr, nullptr);
+        if (sizeNeeded <= 0) return {};
+        std::string result(static_cast<std::size_t>(sizeNeeded), '\0');
+        WideCharToMultiByte(CP_UTF8, 0, wide.c_str(), static_cast<int>(wide.size()),
+            result.data(), sizeNeeded, nullptr, nullptr);
+        return result;
+    }
+
+    const char* RiskLevelToString(RiskLevel level)
+    {
+        switch (level)
+        {
+        case RiskLevel::Malicious: return "Malicious";
+        case RiskLevel::Suspicious: return "Suspicious";
+        default: return "Normal";
+        }
+    }
+
+    void SetString(napi_env env, napi_value obj, const char* key, const std::string& value)
+    {
+        napi_value str;
+        napi_create_string_utf8(env, value.c_str(), value.size(), &str);
+        napi_set_named_property(env, obj, key, str);
+    }
+
+    void SetNumber(napi_env env, napi_value obj, const char* key, double value)
+    {
+        napi_value num;
+        napi_create_double(env, value, &num);
+        napi_set_named_property(env, obj, key, num);
+    }
+
+    void SetBigInt(napi_env env, napi_value obj, const char* key, uint64_t value)
+    {
+        napi_value big;
+        napi_create_bigint_uint64(env, value, &big);
+        napi_set_named_property(env, obj, key, big);
+    }
+
+    void SetBool(napi_env env, napi_value obj, const char* key, bool value)
+    {
+        napi_value booleanValue;
+        napi_get_boolean(env, value, &booleanValue);
+        napi_set_named_property(env, obj, key, booleanValue);
+    }
+
+    napi_value GuardianSampleOnce(napi_env env, napi_callback_info /*info*/)
+    {
+#ifdef _WIN32
+        ProcessSampler sampler;
+        RiskScorer scorer;
+        const auto processes = sampler.SampleProcesses();
+
+        napi_value arr;
+        napi_create_array_with_length(env, processes.size(), &arr);
+
+        for (std::size_t i = 0; i < processes.size(); ++i)
+        {
+            const auto& p = processes[i];
+            const auto report = scorer.Evaluate(p);
+
+            napi_value obj;
+            napi_create_object(env, &obj);
+
+            SetNumber(env, obj, "pid", static_cast<double>(p.pid));
+            SetString(env, obj, "name", WideToUtf8(p.name));
+            SetString(env, obj, "imagePath", WideToUtf8(p.imagePath));
+            SetNumber(env, obj, "cpuPercent", p.cpuPercent);
+            SetBigInt(env, obj, "workingSetBytes", static_cast<uint64_t>(p.workingSetBytes));
+            SetBigInt(env, obj, "privateBytes", static_cast<uint64_t>(p.privateBytes));
+            SetNumber(env, obj, "handleCount", static_cast<double>(p.handleCount));
+            SetNumber(env, obj, "entropy", p.entropy);
+            SetBool(env, obj, "isSigned", p.isSigned);
+            SetString(env, obj, "riskLevel", RiskLevelToString(report.level));
+            SetNumber(env, obj, "riskScore", report.score);
+            SetString(env, obj, "reason", WideToUtf8(report.reason));
+
+            napi_set_element(env, arr, static_cast<uint32_t>(i), obj);
+        }
+        return arr;
+#else
+        napi_throw_error(env, nullptr, "Guardian native module is only supported on Windows.");
+        return nullptr;
+#endif
+    }
+
+    napi_value Init(napi_env env, napi_value exports)
+    {
+        napi_value fn;
+        napi_create_function(env, "sampleOnce", NAPI_AUTO_LENGTH, GuardianSampleOnce, nullptr, &fn);
+        napi_set_named_property(env, exports, "sampleOnce", fn);
+        return exports;
+    }
+}
+
+NAPI_MODULE(NODE_GYP_MODULE_NAME, Init)
+#endif
+
+#if !defined(BUILDING_NODE_EXTENSION)
 int wmain(int argc, wchar_t* argv[])
 {
     bool once = false;
@@ -507,6 +617,7 @@ int wmain(int argc, wchar_t* argv[])
     engine.Stop();
     return 0;
 }
+#endif
 
 #else
 int main()

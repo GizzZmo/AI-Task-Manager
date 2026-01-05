@@ -98,6 +98,12 @@ Integrate the C++ guardian agent:
 - **Option B**: Compile as native Node module with node-gyp
 - **Option C**: Use named pipes for IPC
 
+**Current progress (Option B)**:
+
+- Build the module: `npm run native:build` (builds a Windows addon; non-Windows builds emit a stub).
+- Electron loads `build/Release/guardian.node` and exposes `window.electron.getGuardianSnapshot()` via IPC channel `guardian:sample`.
+- During packaging the native binary is bundled automatically.
+
 ### 5. Packaging & Distribution
 
 - Add code signing certificate

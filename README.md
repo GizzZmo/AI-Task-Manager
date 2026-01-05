@@ -30,6 +30,7 @@ The project now includes initial Electron scaffolding for Windows desktop packag
    npm run electron:dev
    ```
    This launches the Electron window pointing to `http://localhost:3000`.
+   - Optional native guardian module (Windows): `npm run native:build` builds `build/Release/guardian.node` for the IPC bridge.
 
 2. **Build desktop app**: 
    ```bash
